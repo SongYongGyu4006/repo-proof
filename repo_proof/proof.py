@@ -99,7 +99,8 @@ def prove(url, out_dir, planner=None, local_url=None, local_model=None, max_chec
         v, why = P.verdict(results)
     except Exception as e:
         st = locals().get('st') or {}; pl = locals().get('pl') or {'claim': '', 'checks': []}; results = locals().get('results') or []
-        v, why = 'error', repr(e)[:400]; L('error', error=why)
+        import traceback
+        v, why = 'error', repr(e)[:400]; L('error', error=why, where=traceback.format_exc().strip().splitlines()[-3:])
     rep = {'url': url, 'verdict': v, 'why': why, 'claim': pl.get('claim'), 'setup': st, 'results': results, 'minutes': round((time.time() - t0) / 60, 1),
            'environment': '%s %s' % (platform.system(), platform.machine()), 'local_model': local_model if local_url else None, 'events': events}
     R.write(t, rep)

@@ -4,12 +4,14 @@
   anthropic  Anthropic Messages API, key from $ANTHROPIC_API_KEY
   command    any CLI that reads the prompt on stdin and prints the answer, e.g. --planner-cmd "claude -p" or "llm -m gpt-5"
 """
-import json, os, shlex, subprocess, urllib.request
+import json, os, shlex, shutil, subprocess, urllib.request
 
 
 def ask(prompt, kind='openai', model=None, url=None, cmd=None, timeout=900):
     if kind == 'command':
         if not cmd: raise ValueError('--planner-cmd is required for the command planner')
+        argv = shlex.split(cmd)
+        if not shutil.which(argv[0]): raise FileNotFoundError('planner command not found: %s' % argv[0])
         p = subprocess.run(shlex.split(cmd), input=prompt, capture_output=True, text=True, timeout=timeout)
         if p.returncode: raise RuntimeError('planner command failed: ' + (p.stderr or p.stdout)[-300:])
         return p.stdout
