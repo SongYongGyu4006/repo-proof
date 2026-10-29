@@ -31,6 +31,10 @@ repo-proof run https://github.com/OWNER/REPO --planner openai --local-model-url 
 
 Because the agent then also *grades* itself. Here the model only proposes what to check; the commands, the evidence and the verdict are code. When a check fails you see exactly which criterion and the output.
 
+## Example
+
+[`examples/humanize`](examples/humanize/REPORT.md): the planner turned the README's documented outputs into 24 assertions (`CORE_PASS=24/24`) plus a locale-switching check; the locale script failed once on a planning mistake, was fixed in the repair round and passed. 0.9 minutes, verdict **works**.
+
 ## Real findings (from running the same method on trending repos)
 
 - A multi-agent trading framework ran end-to-end on a local 27B model (14–16 minutes per trading day, Korean debate output).

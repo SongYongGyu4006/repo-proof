@@ -1,0 +1,46 @@
+{
+ "claim": "humanize turns numbers, sizes, durations and fractions into human-readable strings (e.g. 12345 -> '12,345', 1001s -> '17 minutes', 1000000 bytes -> '1.0 MB') and can switch locale at runtime.",
+ "extras": [],
+ "prefetch": "",
+ "files": {
+  "scratch/core.py": "import datetime as dt\nimport humanize\n\ndelta = dt.timedelta(seconds=3633, days=2, microseconds=123000)\nms = dt.timedelta(milliseconds=4)\ncases = [\n    ('intcomma', humanize.intcomma(12345), '12,345'),\n    ('intword1', humanize.intword(123455913), '123.5 million'),\n    ('intword2', humanize.intword(12345591313), '12.3 billion'),\n    ('apnumber4', humanize.apnumber(4), 'four'),\n    ('apnumber41', humanize.apnumber(41), '41'),\n    ('naturaldelta', humanize.naturaldelta(dt.timedelta(seconds=1001)), '17 minutes'),\n    ('naturalday_today', humanize.naturalday(dt.datetime.now()), 'today'),\n    ('naturalday_yest', humanize.naturalday(dt.datetime.now() - dt.timedelta(days=1)), 'yesterday'),\n    ('naturaldate', humanize.naturaldate(dt.date(2007, 6, 5)), 'Jun 05 2007'),\n    ('naturaltime_hour', humanize.naturaltime(dt.datetime.now() - dt.timedelta(seconds=3600)), 'an hour ago'),\n    ('naturaltime_ms', humanize.naturaltime(ms, minimum_unit='milliseconds'), '4 milliseconds ago'),\n    ('precisedelta', humanize.precisedelta(delta), '2 days, 1 hour and 33.12 seconds'),\n    ('precisedelta_us', humanize.precisedelta(delta, minimum_unit='microseconds'), '2 days, 1 hour, 33 seconds and 123 milliseconds'),\n    ('precisedelta_sup', humanize.precisedelta(delta, suppress=['days'], format='%0.4f'), '49 hours and 33.1230 seconds'),\n    ('size', humanize.naturalsize(1_000_000), '1.0 MB'),\n    ('size_bin', humanize.naturalsize(1_000_000, binary=True), '976.6 KiB'),\n    ('size_gnu', humanize.naturalsize(1_000_000, gnu=True), '976.6K'),\n    ('frac_third', humanize.fractional(1/3), '1/3'),\n    ('frac_15', humanize.fractional(1.5), '1 1/2'),\n    ('frac_03', humanize.fractional(0.3), '3/10'),\n    ('sci', humanize.scientific(500), '5.00 x 10\\u00b2'),\n    ('sci_neg', humanize.scientific(0.3), '3.00 x 10\\u207b\\u00b9'),\n    ('list3', humanize.natural_list(['one', 'two', 'three']), 'one, two and three'),\n    ('ordinal', humanize.ordinal(103), '103rd'),\n]\nok = 0\nfor name, got, want in cases:\n    if got == want:\n        ok += 1\n    else:\n        print('MISMATCH %s got=%r want=%r' % (name, got, want))\nprint('CORE_PASS=%d/%d' % (ok, len(cases)))\n",
+  "scratch/i18n.py": "import datetime as dt\nimport humanize\n\nen = humanize.naturaltime(dt.timedelta(seconds=3))\nprint('EN=' + en)\nhumanize.i18n.activate('ru_RU')\nru = humanize.naturaltime(dt.timedelta(seconds=3))\nprint('RU=' + ru)\nhumanize.i18n.deactivate()\nhumanize.i18n.activate('tr_TR')\ntr = humanize.intcomma(1_234_567.89)\nprint('TR=' + tr)\nhumanize.i18n.deactivate()\nback = humanize.naturaltime(dt.timedelta(seconds=3))\nprint('BACK_TO_EN=%s' % (back == en))\nprint('LOCALE_OK=%s' % (ru != en and tr == '1.234.567,89' and back == en))\n"
+ },
+ "checks": [
+  {
+   "id": "c1",
+   "core": true,
+   "what": "Run README examples for number, time, size, fraction, scientific and list humanizers and compare to the documented outputs",
+   "cmd": "venv/bin/python scratch/core.py",
+   "timeout_s": 120,
+   "needs": [
+    "none"
+   ],
+   "pass": {
+    "exit": 0,
+    "stdout_regex": [
+     "CORE_PASS=24/24"
+    ]
+   },
+   "runnable": true
+  },
+  {
+   "id": "c2",
+   "core": false,
+   "what": "Runtime locale switching (ru_RU, tr_TR) changes output and deactivate restores English",
+   "cmd": "venv/bin/python scratch/i18n.py",
+   "timeout_s": 120,
+   "needs": [
+    "none"
+   ],
+   "pass": {
+    "exit": 0,
+    "stdout_contains": [
+     "LOCALE_OK=True",
+     "BACK_TO_EN=True"
+    ]
+   },
+   "runnable": true
+  }
+ ]
+}
