@@ -38,7 +38,7 @@ def setup(t, url, log, no_sandbox=False, cap_gb=15):
             steps.append(('pip', S.run(t, 'all', cmd, repo, 1500, no_sandbox=no_sandbox, cap_gb=cap_gb)))
     if (repo / 'package.json').is_file():
         steps.append(('npm', S.run(t, 'all', ['npm', 'install', '--ignore-scripts', '--no-audit', '--no-fund'], repo, 1500, no_sandbox=no_sandbox, cap_gb=cap_gb)))
-    for name, r in steps: log('setup', step=name, exit=r['exit'], why=r['why'], seconds=r['seconds'], tail=r['output'][-300:])
+    for name, r in steps: log('setup', part=name, exit=r['exit'], why=r['why'], seconds=r['seconds'], tail=r['output'][-300:])
     return {'ok': all(r['exit'] == 0 for _, r in steps), 'steps': [{'step': n, 'exit': r['exit'], 'why': r['why']} for n, r in steps]}
 
 
