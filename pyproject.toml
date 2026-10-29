@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo-proof"
+version = "0.1.0"
+description = "Install an open-source repo in a sandbox, turn its README claim into machine-checkable tests, run them (local model only), judge by code."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+keywords = ["llm", "agents", "sandbox", "evaluation", "open-source", "reproducibility"]
+
+[project.scripts]
+repo-proof = "repo_proof.cli:main"
+
+[tool.setuptools]
+packages = ["repo_proof"]
